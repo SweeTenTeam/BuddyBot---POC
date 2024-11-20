@@ -1,4 +1,8 @@
 const { Client } = require('pg');
+const express = require('express')
+
+const app = express();
+const PORT = 3000;
 
 const POSTGRES_USER = process.env.POSTGRES_USER || 'postgres';
 const POSTGRES_PASSWORD=process.env.POSTGRES_PASSWORD || 'password';
@@ -24,3 +28,24 @@ client.connect(function(err) {
   if (err) throw err;
   console.log("Connected!");
 });
+
+app.get('/', (req, res) => {
+    res.send('Placeholder response');
+})
+
+app.get('/api/v1/query', async (req,res) => {
+    const query = "SELECT * FROM chat WHERE id=$1";
+    const id = [req.query.id];
+
+    const result = await client.query(query,id);
+    if(result.rowCount > 0){
+        console.log(result.rows[0]);
+        res.json(result.rows[0]);
+    } else {
+        res.json({'Error':'ID not found'});
+    }
+})
+  
+app.listen(PORT, () => {
+  console.log(`BuddyBot listening on port ${PORT}`)
+})
