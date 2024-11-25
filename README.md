@@ -30,4 +30,4 @@ E' inoltre presente `adminer` per accedere direttamente al db a `localhost:8080`
 
 Si possono cambiare le variabili d'ambiente dentro `.env`
 
-Rimpiazzare `your-api-here` con la chiave API di Groq.
+Rimpiazzare `your-api-key` con la chiave API di Groq.
