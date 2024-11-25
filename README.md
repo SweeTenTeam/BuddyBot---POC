@@ -6,6 +6,13 @@ Per creare l'ambiente
 docker compose up
 ```
 
+Per testare la funzionalità di chat
+```bash
+docker container ls #prendere l'id del container di buddybot-backend-1
+docker exec -it {{ id_del_container }} sh
+node index.mjs
+```
+
 Per distruggere l'ambiente
 
 ```bash
@@ -22,3 +29,5 @@ docker compose up --build --force-recreate
 E' inoltre presente `adminer` per accedere direttamente al db a `localhost:8080`
 
 Si possono cambiare le variabili d'ambiente dentro `.env`
+
+Rimpiazzare `your-api-here` con la chiave API di Groq.
