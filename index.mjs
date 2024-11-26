@@ -1,27 +1,10 @@
 import express from 'express';
 import { createInterface } from 'readline';
-import { ChatGroq } from "@langchain/groq";
-import { HumanMessage } from "@langchain/core/messages";
-import pg  from 'pg';
-
-const { Client } = pg;
-
-const model = new ChatGroq({
-  apiKey: process.env.GROQ_API_KEY, // Default value.
-});
+import PostgresClient from './postgres-client.mjs';
+import  LangchainChatService from './langchainchat.mjs';
 
 const app = express();
 const PORT = 3000;
-
-const POSTGRES_USER = process.env.POSTGRES_USER || 'postgres';
-const POSTGRES_PASSWORD=process.env.POSTGRES_PASSWORD || 'password';
-const POSTGRES_HOST=process.env.POSTGRES_HOST || 'db';
-const POSTGRES_DB=process.env.POSTGRES_DB || 'postgres';
-
-console.log(`Username : ${POSTGRES_USER}`);
-console.log(`Password : ${POSTGRES_PASSWORD}`);
-console.log(`Hostname : ${POSTGRES_HOST}`);
-console.log(`Database : ${POSTGRES_DB}`);
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -30,20 +13,15 @@ const rl = createInterface({
   output: process.stdout
 });
 
-await sleep(3000); //wait 3 seconds
+//await sleep(3000); //wait 3 seconds
 
-const client = new Client({
-  user: POSTGRES_USER,
-  host: POSTGRES_HOST,
-  database: POSTGRES_DB,
-  password: POSTGRES_PASSWORD,
-  port: 5432,
-});
-
-await client.connect(function(err) {
-  if (err) throw err;
+const PGClient = new PostgresClient();
+const connection = await PGClient.connect();
+if(connection == 0){
   console.log("Connected!");
-});
+}
+
+const LangchainChat = new LangchainChatService();
 
 app.get('/', (req, res) => {
     res.send('Placeholder response');
@@ -74,28 +52,17 @@ async function startChat() {
             }
 
             if (input.toLowerCase() === 'prev' || input.toLowerCase() === 'previous' || input.toLowerCase() === 'p') {
-              const query = `SELECT question,answer 
-                             FROM chat 
-                             ORDER BY id desc 
-                             LIMIT 1`;
-
-              const result = await client.query(query);
-              console.log(`Previous conversation:`);
-              console.log(`Question: ${result.rows[0].question}`);
-              console.log(`Answer: ${result.rows[0].answer}`);
+              const result = await PGClient.getLastChat();
+              console.log(`Last conversation:`);
+              console.log(`Question ${result.question}`);
+              console.log(`Answer: ${result.answer}`);
               return;
-          }
+            }
             
             try {
-              const message = new HumanMessage(input);
-              const response = await model.invoke([message]);
-              const content = response.content;
-              console.log(`Assistant: ${content}`);
-
-              const query = "INSERT INTO chat(question,answer) VALUES ($1,$2)";
-              const parameters = [input,content];
-
-              await client.query(query,parameters);
+              const result = await LangchainChat.processInput(input);
+              await PGClient.insertChat(input,result);
+              console.log(`Assistant: ${result}`);
             }
             catch (error) {
               console.error('Error:', error);

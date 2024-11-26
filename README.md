@@ -6,10 +6,9 @@ Per creare l'ambiente
 docker compose up
 ```
 
-Per testare la funzionalità di chat
+Per testare la funzionalità di chat, in un altro terminale scrivere
 ```bash
-docker container ls #prendere l'id del container di buddybot-backend-1
-docker exec -it {{ id_del_container }} sh
+docker compose exec backend sh
 node index.mjs
 ```
 
