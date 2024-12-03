@@ -9,7 +9,7 @@ docker compose up
 Per testare la funzionalità di chat, in un altro terminale scrivere
 ```bash
 docker compose exec backend sh
-node index.mjs
+node --no-warnings index.mjs
 ```
 
 Per distruggere l'ambiente
