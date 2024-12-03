@@ -1,7 +1,7 @@
 CREATE TABLE chat(
-    id INT PRIMARY KEY NOT NULL,
-    question VARCHAR(255),
-    answer VARCHAR(255)
+    id SERIAL PRIMARY KEY, -- https://www.tutorialspoint.com/postgresql/postgresql_using_autoincrement.htm
+    question VARCHAR(5000),
+    answer VARCHAR(5000)
 );
 
-INSERT INTO chat(id,question,answer) VALUES (12345,'Question','Answer');
+INSERT INTO chat(question,answer) VALUES ('Question','Answer'); -- to be removed maybe

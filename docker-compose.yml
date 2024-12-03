@@ -1,6 +1,8 @@
 services:
   backend:
     build: .
+    stdin_open: true #doesn't work as expected
+    tty: true #doesn't work as expected
     env_file:
       - .env
     ports:
@@ -19,7 +21,7 @@ services:
     #    tmpfs:
     #      size: 134217728 # 128*2^20 bytes = 128Mb
     volumes:
-      - ./db/data:/var/lib/postgres/data
+      - postgresql_data:/var/lib/postgresql/data
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     env_file:
       - .env
@@ -29,6 +31,15 @@ services:
     restart: always
     ports:
       - 8080:8080
+  
+  vectorial_db:
+    image: qdrant/qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - ./qdrant-storage/:/qdrant/storage:z
+  
 
-#volumes:
-#  postgresql_data:
+volumes:
+  postgresql_data:
