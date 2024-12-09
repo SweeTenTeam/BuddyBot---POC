@@ -1,12 +1,8 @@
 import { QdrantVectorStore } from "@langchain/qdrant";
 import { NomicEmbeddings } from "@langchain/nomic";
-import { Document } from "@langchain/core/documents";
 import { logger } from "./logger.mjs";
 import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
 import { QdrantClient } from "@qdrant/js-client-rest"; // Import the Qdrant REST client
-
-
-
 
 export class VectorStoreService{
     qdrantVectorStore;
@@ -46,9 +42,7 @@ export class VectorStoreService{
     
     async addDocuments(documents){
         try {
-
             const splitDocs = await this.splitDocuments(documents);
-
             await this.qdrantVectorStore.addDocuments(splitDocs);
             logger.info("Documents added successfully to vector store.");
         }
@@ -58,13 +52,13 @@ export class VectorStoreService{
         }
     }
 
-    async similaritySearch(query, k = 2) {
+    async similaritySearch(query, k = 4) {
         try {
             logger.info(`Calling similaritySearch with query: ${query}, k: ${k}`);
             const retr = this.qdrantVectorStore.asRetriever(k);
             // Perform search with the retriever
             const results = await retr.invoke(query);
-            logger.info(`Similarity search results: ${JSON.stringify(results)}`);
+            logger.info(`Similarity search results: ${JSON.stringify(results,null,4)}`);
             return results;
         }
         catch (error) {
@@ -95,7 +89,4 @@ export class VectorStoreService{
             throw error;
         }
     }
-    
-
-
 }

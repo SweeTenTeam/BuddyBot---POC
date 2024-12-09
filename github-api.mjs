@@ -1,7 +1,6 @@
 import { Octokit } from "@octokit/rest";
 
-
-class GithubCilent {
+export class GithubCilent {
     octokit;
     owner = "SweeTenTeam";
     repo = "BuddyBot---POC";
@@ -21,16 +20,15 @@ class GithubCilent {
         });
     }
 
-    getFileContents(path) {
-        this.octokit.rest.repos.getContent({
+    async getFileContents(path) {
+        var result = "";
+        await this.octokit.rest.repos.getContent({
             owner: this.owner,
             repo: this.repo,
             path: path,
         }).then(({ data })=>{
-            return atob(data['content'].replaceAll("\n",""));
+            result = Buffer.from(data['content'].replaceAll("\n",""), 'base64') + ''; //https://stackoverflow.com/questions/10145946/what-is-causing-the-error-string-split-is-not-a-function
         });
+        return result;
     }
 }
-
-export default GithubCilent;
-

@@ -1,12 +1,10 @@
 import { ChatGroq } from "@langchain/groq";
-import { HumanMessage } from "@langchain/core/messages";
-import { VectorStoreService } from "./vectorStoreService.mjs";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 
 
-class LangchainChatService{
+export class LangchainChatService{
     model;
     vectorStoreService;
     constructor(_vectorStoreService){
@@ -17,7 +15,7 @@ class LangchainChatService{
     }
 
     async processInput(input){
-        const relevantDocs = this.vectorStoreService.similaritySearch(input, 1)
+        const relevantDocs = this.vectorStoreService.similaritySearch(input)
 
         // const message = new HumanMessage(input);
         const prompt = PromptTemplate.fromTemplate(`Answer the question based only on the following context: {context} Question: {question}`);
@@ -30,5 +28,3 @@ class LangchainChatService{
         return response;
     }
 }
-
-export default LangchainChatService;

@@ -7,12 +7,7 @@ const POSTGRES_PASSWORD=process.env.POSTGRES_PASSWORD || 'password';
 const POSTGRES_HOST=process.env.POSTGRES_HOST || 'db';
 const POSTGRES_DB=process.env.POSTGRES_DB || 'postgres';
 
-//console.log(`Username : ${POSTGRES_USER}`);
-//console.log(`Password : ${POSTGRES_PASSWORD}`);
-//console.log(`Hostname : ${POSTGRES_HOST}`);
-//console.log(`Database : ${POSTGRES_DB}`);
-
-class PostgresClient {
+export class PostgresClient {
     client;
     constructor(){
         this.client = new Client({
@@ -54,5 +49,3 @@ class PostgresClient {
         return result.rows[0];
     }
 }
-
-export default PostgresClient;
