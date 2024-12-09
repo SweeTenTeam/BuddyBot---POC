@@ -140,13 +140,12 @@ async function testAddDocuments(){
   }
 
   async function testSimilaritySearch(){
-    const query = "What is lagchain?"
+    const query = "What is langchain?"
     vectorStoreService.similaritySearch(query, 1);
   }
 
 
   async function testNumPointVectorDB(){
-    const query = "What is lagchain?"
     vectorStoreService.getCollectionSize();
   }
 
