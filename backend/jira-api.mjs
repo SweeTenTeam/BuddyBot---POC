@@ -20,7 +20,7 @@ export class JiraClient {
                 id: issue.id,
                 key: issue.key,
                 summary: issue.fields.summary,
-                description: issue.fields.description || 'No description available',
+                description: issue.fields.description.content[0].content[0].text || 'No description available',
                 status: issue.fields.status.name,
                 project: issue.fields.project.name,
             };

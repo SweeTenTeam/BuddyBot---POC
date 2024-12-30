@@ -1,4 +1,3 @@
-import express from 'express';
 import { createInterface } from 'readline';
 import { PostgresClient } from './postgres-client.mjs';
 import { LangchainChatService } from './langchainchat.mjs';
@@ -6,9 +5,7 @@ import { VectorStoreService } from './vectorStoreService.mjs';
 import { GithubCilent } from './github-api.mjs';
 import { JiraClient } from './jira-api.mjs'; // Importa il JiraClient
 import { logger } from './logger.mjs';
-
-const app = express();
-const PORT = 3000;
+import { ConfluenceClient } from './conf-api.mjs';
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -32,23 +29,7 @@ const LangchainChat = new LangchainChatService(vectorStoreService);
 
 const githubClient = new GithubCilent();
 const jiraClient = new JiraClient(); // Crea un'istanza di JiraClient
-
-app.get('/', (req, res) => {
-  res.send('Placeholder response');
-});
-
-app.get('/api/v1/query', async (req, res) => {
-  const query = "SELECT * FROM chat WHERE id=$1";
-  const id = [req.query.id];
-
-  const result = await PGClient.query(query, id);
-  if (result.rowCount > 0) {
-    console.log(result.rows[0]);
-    res.json(result.rows[0]);
-  } else {
-    res.json({ 'Error': 'ID not found' });
-  }
-});
+const confluenceClient = new ConfluenceClient();
 
 async function startChat() {
   try {
@@ -61,9 +42,9 @@ async function startChat() {
           case 'exit':
           case 'quit':
           case 'q':
+            console.log('Exiting the chat application.');
             rl.close();
             await PGClient.close();
-            console.log('Exiting the chat application.');
             process.exit();
 
           case 'prev':
@@ -112,74 +93,36 @@ async function startChat() {
             } catch (error) {
               logger.error('Error fetching vector store size:', error);
             }
-          break;
+            break;
 //JIRA 
         case 'fetchjira':
-          const issueId0 = input.split(' ')[1]; // input -> "fetchJira ISSUE-ID"
-          if (!issueId0) {
-              console.log('Please provide an issue ID.');
-              break;
-          }
+          const issueId0 = '10001';
           try {
               await testFetchIssueFromJiraAndAdd(issueId0);
               console.log(`Jira issue ${issueId0} has been fetched and indexed successfully.`);
           } catch (error) {
               logger.error(`Error fetching and indexing Jira issue: ${error.message}`);
           }
-        break;
+          break;
 //CONF
         case 'fetchconf':
-          const pageId = input.split(' ')[1]; // Mettebdo "fetchconf PAGE_ID"
-          if (!pageId) {
-            console.log('Please provide a valid page ID.');
-            break;
-          }
+          const pageId = '13369471';
           try {
             await testFetchPageFromConfluenceAndAdd(pageId);
+            console.log(`Confluence document with id ${pageId} has been fetched and indexed successfully.`);
           } catch (error) {
-            logger.error(`Error fetching and adding Confluence page: ${error.message}`);
+            logger.error(`Error fetching and indexing Jira issue: ${error.message}`);
           }
-        break;
-
-
-          case 'indexJira':
-              const issueId1 = input.split(' ')[1];
-              try {
-                  await jiraClient.indexIssue(issueId1, vectorStoreService);
-                  console.log(`Jira issue ${issueId1} has been indexed successfully.`);
-              } catch (error) {
-                  logger.error(`Error indexing Jira issue: ${error.message}`);
-              }
           break;
-            
-          case 'jira issue':
-            const issueId = input.split(' ')[2]; // Assumendo che l'input sia "jira issue ISSUE-123"
-            try {
-              const issue = await jiraClient.getIssue(issueId);
-              console.log('Jira Issue:', issue);
-            } catch (error) {
-              logger.error('Error fetching Jira issue:', error);
-            }
-            break;
-
-          case 'jira search':
-            const jql = input.split(' ').slice(2).join(' '); // Assumendo che l'input sia "jira search project = MYPROJECT"
-            try {
-              const issues = await jiraClient.searchIssues(jql);
-              console.log('Jira Issues:', issues);
-            } catch (error) {
-              logger.error('Error searching Jira issues:', error);
-            }
-            break;
-
-          default:
-            try {
-              const result = await LangchainChat.processInput(input);
-              await PGClient.insertChat(input, result);
-              console.log(`Assistant: ${result}`);
-            } catch (error) {
-              logger.error('Error:', error);
-            }
+        
+        default:
+          try {
+            const result = await LangchainChat.processInput(input);
+            await PGClient.insertChat(input, result);
+            console.log(`Assistant: ${result}`);
+          } catch (error) {
+            logger.error('Error:', error);
+          }
         }
 
         // Continue the conversation
@@ -204,30 +147,42 @@ async function testFetchFileFromGithubAndAdd(path) {
 
 async function testFetchIssueFromJiraAndAdd(issueId) {
   try {
-      const issueDocument = await jiraClient.getIssueForIndexing(issueId);
-      logger.info(`Jira issue document for ${issueId}: ${JSON.stringify(issueDocument, null, 2)}`);
+    // Recupera i dettagli dell'issue
+    const issue = await jiraClient.getIssue(issueId);
+    console.log(issue)
+    // Prepara il documento per l'indicizzazione
+    const document = {
+        pageContent: `Issue ID: ${issue.id}\nIssue Key: ${issue.key}\nSummary: ${issue.summary}\nDescription: ${issue.description}\nStatus: ${issue.status}\nProject: ${issue.project}`,
+        metadata: { key: issue.key, project: issue.project },
+    };
 
-      await vectorStoreService.addDocuments([issueDocument]);
-      logger.info(`Jira issue ${issueId} has been successfully indexed.`);
+    // Aggiungi il documento al Vector Store
+    await vectorStoreService.addDocuments([document]);
+    logger.info(`Issue ${issueId} indexed successfully.`);
   } catch (error) {
       logger.error(`Error fetching Jira issue ${issueId} and/or adding to the vector store: ${error.message}`);
+      throw error;
   }
 }
 
 async function testFetchPageFromConfluenceAndAdd(pageId) {
   try {
-    const page = await confluenceClient.getPage(pageId); 
-    logger.info(`Page details fetched: ${JSON.stringify(page)}`);
-    
-    const document = {
-      pageContent: `Title: ${page.title}\nContent: ${page.content}`,
-      metadata: { id: page.id, title: page.title },
-    };
+    // Recupera i dettagli della pagina
+    const page = await confluenceClient.getPage(pageId);
+    console.log(page);
 
+    // Prepara il documento per l'indicizzazione
+    const document = {
+        pageContent: `Title: ${page.title}\nContent: ${page.content}`,
+        metadata: { id: page.id, title: page.title },
+    };
+    console.log(document)
+    // Aggiungi il documento al Vector Store
     await vectorStoreService.addDocuments([document]);
-    logger.info(`Page ${pageId} added successfully to Vector Store.`);
+    logger.info(`Page ${pageId} indexed successfully.`);
   } catch (error) {
-    logger.error(`Error fetching and indexing page from Confluence: ${error.message}`);
+      logger.error(`Error indexing page ${pageId}: ${error.message}`);
+      throw error;
   }
 }
 
@@ -264,8 +219,4 @@ async function testNumPointVectorDB() {
 // Avvia la chat
 startChat();
 
-/* BOHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH
-app.listen(PORT, () => {
-  logger.info(`Server is running on http://localhost:${PORT}`);
-});*/
 

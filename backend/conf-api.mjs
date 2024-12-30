@@ -17,6 +17,7 @@ export class ConfluenceClient {
                 auth: this.auth,
             });
             const page = response.data;
+            console.log(page)
             return {
                 id: page.id,
                 title: page.title,
