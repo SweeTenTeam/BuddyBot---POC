@@ -1,13 +1,9 @@
-import express from 'express';
 import { createInterface } from 'readline';
 import { PostgresClient } from './postgres-client.mjs';
 import { LangchainChatService } from './langchainchat.mjs';
 import { VectorStoreService } from './vectorStoreService.mjs'
 import { GithubCilent } from './github-api.mjs';
 import { logger } from './logger.mjs';
-
-const app = express();
-const PORT = 3000;
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -32,22 +28,6 @@ const LangchainChat = new LangchainChatService(vectorStoreService);
 
 const githubClient = new GithubCilent();
 
-app.get('/', (req, res) => {
-    res.send('Placeholder response');
-})
-
-app.get('/api/v1/query', async (req,res) => {
-    const query = "SELECT * FROM chat WHERE id=$1";
-    const id = [req.query.id];
-
-    const result = await client.query(query,id);
-    if(result.rowCount > 0){
-        console.log(result.rows[0]);
-        res.json(result.rows[0]);
-    } else {
-        res.json({'Error':'ID not found'});
-    }
-})
 
 async function startChat() {
   try {
@@ -146,11 +126,11 @@ async function testFetchFileFromGithubAndAdd(path){
 async function testAddDocuments(){
   const documents = []
   documents.push({pageContent:"UnitedHealthcare CEO Brian Thompson was shot and killed outside a Manhattan hotel on Wednesday.",
-    metadata:{}})
+    metadata:{}});
   documents.push({pageContent:"French Prime Minister Michel Barnier on Thursday arrived at the Elysee Palace to submit his resignation.",
-    metadata:{}})
+    metadata:{}});
   documents.push({pageContent:"LangChain is an open-source framework designed to facilitate the integration of large language models (LLMs) into applications. Launched in October 2022 by Harrison Chase, LangChain aims to streamline the development of generative AI applications by providing tools and abstractions that allow developers to connect LLMs with various external data sources and components.",
-     metadata:{}})
+     metadata:{}});
 
   await vectorStoreService.addDocuments(documents);
   logger.info("Test finished")
@@ -167,6 +147,3 @@ async function testNumPointVectorDB(){
 
 
 startChat();
-//app.listen(PORT, () => {
-//  console.log(`BuddyBot listening on port ${PORT}`)
-//})
