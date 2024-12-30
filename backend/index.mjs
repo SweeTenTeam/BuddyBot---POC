@@ -218,5 +218,3 @@ async function testNumPointVectorDB() {
 
 // Avvia la chat
 startChat();
-
-

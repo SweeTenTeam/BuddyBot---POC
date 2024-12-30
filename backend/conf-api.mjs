@@ -1,67 +1,40 @@
-import axios from 'axios';
+import Confluence from 'confluence-api';
 import { logger } from './logger.mjs';
 
 export class ConfluenceClient {
     constructor() {
-        this.baseUrl = 'https://sweetenteam.atlassian.net/wiki/rest/api';
-        this.auth = {
+        this.confluence = new Confluence({
             username: process.env.JIRA_EMAIL,
             password: process.env.JIRA_API_KEY,
-        };
+            baseUrl: 'https://sweetenteam.atlassian.net/wiki',
+        });
     }
 
     async getPage(pageId) {
-        try {
-            const response = await axios.get(`${this.baseUrl}/content/${pageId}`, {
-                params: { expand: 'body.storage' },
-                auth: this.auth,
+        return new Promise((resolve, reject) => {
+            this.confluence.getContentById(pageId, (err, data) => {
+                if (err) {
+                    logger.error(`Error fetching page ${pageId} from Confluence: ${err.message}`);
+                    return reject(err);
+                }
+    
+                if (!data || !data.id) {
+                    logger.error(`Invalid response for page ${pageId}`);
+                    return reject(new Error(`Invalid response for page ${pageId}`));
+                }
+    
+                try {
+                    resolve({
+                        id: data.id,
+                        title: data.title,
+                        content: data.body.storage.value, 
+                    });
+                } catch (parseError) {
+                    logger.error(`Error parsing page ${pageId} data: ${parseError.message}`);
+                    reject(parseError);
+                }
             });
-            const page = response.data;
-            console.log(page)
-            return {
-                id: page.id,
-                title: page.title,
-                content: page.body.storage.value,
-            };
-        } catch (error) {
-            logger.error(`Error fetching page ${pageId} from Confluence: ${error.message}`);
-            throw error;
-        }
+        });
     }
-
-    async searchPages(cql) {
-        try {
-            const response = await axios.get(`${this.baseUrl}/content/search`, {
-                params: { cql },
-                auth: this.auth,
-            });
-            return response.data.results.map(page => ({
-                id: page.id,
-                title: page.title,
-            }));
-        } catch (error) {
-            logger.error(`Error searching pages in Confluence: ${error.message}`);
-            throw error;
-        }
-    }
-
-    async indexPage(pageId, vectorStoreService) {
-        try {
-            // Recupera i dettagli della pagina
-            const page = await this.getPage(pageId);
-
-            // Prepara il documento per l'indicizzazione
-            const document = {
-                pageContent: `Title: ${page.title}\nContent: ${page.content}`,
-                metadata: { id: page.id, title: page.title },
-            };
-
-            // Aggiungi il documento al Vector Store
-            await vectorStoreService.addDocuments([document]);
-            logger.info(`Page ${pageId} indexed successfully.`);
-        } catch (error) {
-            logger.error(`Error indexing page ${pageId}: ${error.message}`);
-            throw error;
-        }
-    }
+    
 }
