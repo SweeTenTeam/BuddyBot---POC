@@ -6,7 +6,7 @@ COPY ./package-lock.json /app/package-lock.json
 
 WORKDIR /app
 RUN npm install confluence-api
-RUN npm install axios
+RUN npm install jira-client
 RUN npm install
 
 COPY . .

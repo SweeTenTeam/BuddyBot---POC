@@ -27,7 +27,7 @@ export class ConfluenceClient {
                     resolve({
                         id: data.id,
                         title: data.title,
-                        content: data.body.storage.value, 
+                        content: data.body.storage.value, //IMPORTARE JDOM per passare da html a testo pulito.
                     });
                 } catch (parseError) {
                     logger.error(`Error parsing page ${pageId} data: ${parseError.message}`);
