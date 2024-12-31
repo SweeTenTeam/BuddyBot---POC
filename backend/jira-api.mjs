@@ -17,11 +17,25 @@ export class JiraClient {
         try {
             const issue = await this.jira.findIssue(issueId);
 
+            // RECUPERO DECRIZIONE 
+            const descriptionContent = issue.fields.description?.content || [];
+            let descriptionText = '';
+
+            descriptionContent.forEach(block => {
+                block.content?.forEach(segment => {
+                    if (segment.text) {
+                        descriptionText += segment.text + ' '; // CICLO PER RECUPERARE TUTTE LE LINE DI TESTO DELL'ARRAY CONTENT
+                    }
+                });
+            });
+
+            descriptionText = descriptionText.trim() || 'No description available';
+
             return {
                 id: issue.id,
                 key: issue.key,
                 summary: issue.fields.summary,
-                description: issue.fields.description?.content[0]?.content[0]?.text || 'No description available', //bisogna mettere un ciclo per recuperatre tutto siccome jira ha una struttura ad array
+                description: descriptionText, //VERIABILE CON TUTTA LA DESCRIPION
                 status: issue.fields.status.name,
                 project: issue.fields.project.name,
             };

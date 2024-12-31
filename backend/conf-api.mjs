@@ -1,5 +1,6 @@
 import Confluence from 'confluence-api';
 import { logger } from './logger.mjs';
+import { JSDOM } from 'jsdom'; // Importa jsdom
 
 export class ConfluenceClient {
     constructor() {
@@ -24,10 +25,14 @@ export class ConfluenceClient {
                 }
     
                 try {
+                    //conversione da html text a NL con JSDOM
+                    const dom = new JSDOM(data.body.storage.value);
+                    const plainTextContent = dom.window.document.body.textContent.trim();
+
                     resolve({
                         id: data.id,
                         title: data.title,
-                        content: data.body.storage.value, //IMPORTARE JDOM per passare da html a testo pulito.
+                        content: plainTextContent, // contenuto pulito
                     });
                 } catch (parseError) {
                     logger.error(`Error parsing page ${pageId} data: ${parseError.message}`);
@@ -36,5 +41,4 @@ export class ConfluenceClient {
             });
         });
     }
-    
 }
