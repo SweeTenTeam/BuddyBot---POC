@@ -111,7 +111,7 @@ async function startChat() {
             await testFetchPageFromConfluenceAndAdd(pageId);
             console.log(`Confluence document with id ${pageId} has been fetched and indexed successfully.`);
           } catch (error) {
-            logger.error(`Error fetching and indexing Jira issue: ${error.message}`);
+            logger.error(`Error fetching and indexing Confluence issue: ${error.message}`);
           }
           break;
         
