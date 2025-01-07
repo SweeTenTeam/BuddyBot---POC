@@ -1,12 +1,14 @@
 services:
   backend:
-    build: .
+    build: backend
     stdin_open: true #doesn't work as expected
     tty: true #doesn't work as expected
     env_file:
       - .env
     ports:
       - "80:3000"
+    volumes:
+      - ./backend/index.mjs:/app/index.mjs
     #restart: always
     
   db:
