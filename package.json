@@ -1,8 +1,0 @@
-{
-  "dependencies": {
-    "@langchain/core": "^0.3.18",
-    "@langchain/groq": "^0.1.2",
-    "express": "^4.21.1",
-    "pg": "^8.13.1"
-  }
-}
