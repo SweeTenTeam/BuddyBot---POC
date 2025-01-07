@@ -52,13 +52,13 @@ export class VectorStoreService{
         }
     }
 
-    async similaritySearch(query, k = 4) {
+    async similaritySearch(query, k = 500) {
         try {
             logger.info(`Calling similaritySearch with query: ${query}, k: ${k}`);
             const retr = this.qdrantVectorStore.asRetriever(k);
             // Perform search with the retriever
             const results = await retr.invoke(query);
-            logger.info(`Similarity search results: ${JSON.stringify(results,null,4)}`);
+            //logger.info(`Similarity search results: ${JSON.stringify(results,null,2)}`);
             return results;
         }
         catch (error) {
