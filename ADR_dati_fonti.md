@@ -1,0 +1,101 @@
+- **Github**:
+  - **Informazioni generali sulla repository**:
+    - Nome della repository;
+    - Descrizione della repository;
+    - Data di creazione della repository;
+    - Ultima data di aggiornamento della repository;
+    - Numero di stelle, fork e watcher;
+    - Linguaggio principale della repository;
+    - Licenza della repository.
+  - **Informzioni di una issue**:
+    - Stato (aperta, chiusa);
+    - Titolo della issue;
+    - Descrizione della issue;
+    - Etichette associate;
+    - Assegnatario della issue;
+    - Data di creazione e ultimo aggiornamento;
+    - Commenti associati;
+    - Milestone associata;
+    - Issue collegate (es. duplicate, di riferimento).
+  - **Elenco delle issue**:
+    - Issue aperte;
+    - Issue chiuse;
+    - Issue assegnate a un determinato utente;
+    - Issue con una specifica etichetta;
+    - Issue associate a una specifica milestone.
+  - **Ultimo commit fatto da un utente**:
+    - Messaggio del commit;
+    - Hash del commit;
+    - Data e ora del commit;
+    - Branch associato;
+    - File modificati;
+    - Autore del commit.
+  - **Milestones attive**:
+    - Milestones attive;
+    - Milestones chiuse;
+    - Issue da completare per una milestone;
+    - Data di scadenza;
+    - Progresso (issue completate vs. totali).
+  - **Issue da completare per una milestone**:
+    - Issue associate a una milestone;
+    - Stato delle issue (aperte, chiuse);
+    - Progresso della milestone.
+  - **Username del responsabile di una issue**:
+    - Assegnatario della issue;
+    - Ruolo dell'assegnatario (es. collaboratore, maintainer).
+  - **File presenti in una directory**:
+    - Elenco dei file;
+    - Contenuto dei file;
+    - Cronologia delle modifiche;
+    - Autore delle modifiche;
+    - Dimensione dei file;
+    - Permessi dei file.
+  - **Elenco dei collaboratori nel repository**:
+    - Elenco dei collaboratori;
+    - Ruoli dei collaboratori (es. maintainer, contributor);
+    - Permessi dei collaboratori.
+  - **Pull request**:
+    - Lista Pull request attive;
+    - Lista Pull request chiuse;
+    - Titolo e descrizione;
+    - Stato (aperta, chiusa, mergiata);
+    - Assegnatario;
+    - Reviewers;
+    - Commenti e discussioni;
+    - File modificati;
+    - Branch di origine e di destinazione.
+  - **Stato dei workflow di GitHub Action**:
+    - Stato dei workflow (es. success, failure, pending);
+    - Ultimo workflow eseguito;
+    - Log dei workflow;
+    - Trigger dei workflow (es. push, pull request);
+    - Durata dei workflow.
+
+-------------------------------------------------------------------------
+
+- **Confluence**
+  - Id di una pagina;
+  - Titolo di una pagina;
+  - Status di una pagina;
+  - Autore di una pagina;
+  - Owner di una pagina;
+  - Spazio di una pagina;
+  - Body di una pagina;
+  - Id di una task;
+  - Status di una task;
+  - Creatore di una task;
+  - Assegnatario di una task;
+  - Data di scadenza di una task
+
+-------------------------------------------------------------------------
+
+- **Jira**
+  - Nome (titolo) di un ticket";
+  - Assegnatario di un ticket";
+  - Etichette di un ticket";
+  - Stato di un ticket";
+  - Attività principale collegata a un ticket";
+  - Team di appartenenza di un ticket";
+  - Sprint di appartenenza di un ticket";
+  - #glossary("Story point estimate") di un ticket";
+  - Richiedente/creatore di un ticket".
