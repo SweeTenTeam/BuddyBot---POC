@@ -1,4 +1,4 @@
-FROM node:alpine
+FROM node:20-alpine
 
 COPY ./package.json /app/package.json
 COPY ./package-lock.json /app/package-lock.json
@@ -12,4 +12,4 @@ COPY . .
 
 EXPOSE 3000
 
-CMD ["node","--no-warnings","index.mjs"]
+CMD ["node","index.mjs"]
