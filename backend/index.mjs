@@ -62,7 +62,7 @@ async function startChat() {
 
           case 'fetch':
             try {
-              await testFetchFileFromGithubAndAdd("index.mjs");
+              await testFetchFileFromGithubAndAdd("backend/index.mjs");
             } catch (error) {
               logger.error(`Error fetching file from github and/or adding to the db: ${error}`);
             }
