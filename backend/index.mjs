@@ -62,7 +62,7 @@ async function startChat() {
 
           case 'fetch':
             try {
-              await testFetchFileFromGithubAndAdd("index.mjs");
+              await testFetchFileFromGithubAndAdd("backend/index.mjs");
             } catch (error) {
               logger.error(`Error fetching file from github and/or adding to the db: ${error}`);
             }
@@ -96,7 +96,7 @@ async function startChat() {
             break;
 //JIRA 
         case 'fetchjira':
-          const issueId0 = '10001';
+          const issueId0 = '10000';
           try {
               await testFetchIssueFromJiraAndAdd(issueId0);
               console.log(`Jira issue ${issueId0} has been fetched and indexed successfully.`);
